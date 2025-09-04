@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
+import axios from "axios";
 
 const Chat = () => {
     const [username, setUsername] = useState('');
@@ -26,6 +27,7 @@ const Chat = () => {
                 sender: username,
                 message: message,
             };
+            console.log(messages)
             // 'chatMessage' 이벤트와 함께 메시지 객체를 서버로 전송
             socketRef.current.emit('chatMessage', chatMessage);
             setMessage('');
@@ -90,10 +92,14 @@ const Chat = () => {
             </div>
         );
     }
-
+    const aiHandler =  async () => {
+         const res = await axios.post("/ml/schedule", messages)
+        console.log(res.data);
+    }
     // 채팅 화면
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', height: '80vh', border: '1px solid #ccc' }}>
+        <div style={{display:'flex'}}>
+        <div style={{ display: 'flex', flexDirection: 'column', width:'60vw',height: '80vh', border: '1px solid #ccc' }}>
             <div style={{ flexGrow: 1, overflowY: 'auto', padding: '10px' }}>
                 {messages.map((msg, index) => (
                     <div key={index} style={{ marginBottom: '10px' }}>
@@ -113,7 +119,8 @@ const Chat = () => {
                 <button type="submit" style={{ padding: '10px' }}>전송</button>
             </form>
         </div>
-    );
+        <div><button onClick={aiHandler}>AI 일정 잡기</button></div>
+        </div>);
 }
 
 export default Chat

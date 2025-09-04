@@ -25,6 +25,11 @@ def test1():
         results.append({"text": text, "sentiment": sentiment, "score": polarity})
     return jsonify(results), 200
 
+@app.route("/ml/schedule", methods=["POST"])
+def schedule():
+    data = request.get_json()
+    print("📦 받은 데이터:", data)
+    return jsonify({"status": "received", "count": len(data)})
 if __name__ == '__main__':
     # 개발용 서버
     app.run(host='0.0.0.0', port=5000, debug=True)

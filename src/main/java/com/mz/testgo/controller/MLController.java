@@ -7,9 +7,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
@@ -58,5 +56,19 @@ public class MLController {
 // POST 요청으로 Flask 호출
         String response = restTemplate.postForObject(flaskUrl, entity, String.class);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("schedule")
+    public ResponseEntity<String> schedule(@RequestBody String rawJson) {
+        System.out.println(rawJson);
+        String flaskUrl = "http://192.168.0.22:5000/ml/schedule";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<String> entity = new HttpEntity<>(rawJson, headers);
+
+        ResponseEntity<String> flaskResponse = restTemplate.postForEntity(flaskUrl, entity, String.class);
+
+        return flaskResponse;
     }
 }

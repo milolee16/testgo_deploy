@@ -19,7 +19,7 @@ function App() {
 
     return (
 
-        <div style={{maxWidth: '800px', margin: '0 auto', padding: '20px'}}>
+        <div style={{ margin: '0 auto', padding: '20px'}}>
             <Link to="/"> <h1>React & Spring Boot {con}</h1></Link>
             <Routes>
                 <Route path="/" element={<Home />}/>
