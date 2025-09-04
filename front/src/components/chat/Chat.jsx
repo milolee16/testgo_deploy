@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 import axios from "axios";
+import ScheduleDisplay from "./ScheduleDisplay.jsx";
 
 const Chat = () => {
     const [username, setUsername] = useState('');
@@ -9,6 +10,7 @@ const Chat = () => {
     const [messages, setMessages] = useState([]);
     const socketRef = useRef(null);
     const messagesEndRef = useRef(null);
+    const [schedule, setSchedule] = useState(null);
 
     // 닉네임 설정
     const handleUsernameSubmit = (e) => {
@@ -92,9 +94,26 @@ const Chat = () => {
             </div>
         );
     }
+
+    function extractJsonFromString(text) {
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) return null;
+        try {
+            return JSON.parse(jsonMatch[0]);
+        } catch (error) {
+            console.error("JSON 파싱 에러:", error);
+            return null;
+        }
+    }
     const aiHandler =  async () => {
          const res = await axios.post("/ml/schedule", messages)
-        console.log(res.data);
+        console.log(res.data.raw_response);
+        const scheduleData = extractJsonFromString(res.data.raw_response);
+        if (!scheduleData) {
+            alert("일정 데이터를 파싱하지 못했습니다.");
+            return;
+        }
+        setSchedule(scheduleData)
     }
     // 채팅 화면
     return (
@@ -119,7 +138,11 @@ const Chat = () => {
                 <button type="submit" style={{ padding: '10px' }}>전송</button>
             </form>
         </div>
-        <div><button onClick={aiHandler}>AI 일정 잡기</button></div>
+        <div><button onClick={aiHandler}>AI 일정 잡기</button>
+        <hr/>
+
+            {schedule && <ScheduleDisplay data={schedule} />}
+        </div>
         </div>);
 }
 
