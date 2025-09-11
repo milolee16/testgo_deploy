@@ -37,4 +37,5 @@ front//dist/
 .vscode/
 
 front/node_modules
+src/main/resources/firebase-config.json
 
