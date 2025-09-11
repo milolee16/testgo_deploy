@@ -29,9 +29,12 @@ out/
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
-/dist/
+front//dist/
 /nbdist/
 /.nb-gradle/
 
 ### VS Code ###
 .vscode/
+
+front/node_modules
+
