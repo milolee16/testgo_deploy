@@ -20,7 +20,7 @@ function App() {
     return (
 
         <div style={{ margin: '0 auto', padding: '20px'}}>
-            <Link to="/"> <h1>React & Spring Boot {con}</h1></Link>
+            <Link to="/"> <h1>React & Spring Boot!! {con}</h1></Link>
             <Routes>
                 <Route path="/" element={<Home />}/>
                 <Route path="/chat" element={<Chat/>}/>
