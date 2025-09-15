@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
+import axios from "axios";
+import ScheduleDisplay from "./ScheduleDisplay.jsx";
 
 const Chat = () => {
     const [username, setUsername] = useState('');
@@ -8,6 +10,7 @@ const Chat = () => {
     const [messages, setMessages] = useState([]);
     const socketRef = useRef(null);
     const messagesEndRef = useRef(null);
+    const [schedule, setSchedule] = useState(null);
 
     // 닉네임 설정
     const handleUsernameSubmit = (e) => {
@@ -26,6 +29,7 @@ const Chat = () => {
                 sender: username,
                 message: message,
             };
+            console.log(messages)
             // 'chatMessage' 이벤트와 함께 메시지 객체를 서버로 전송
             socketRef.current.emit('chatMessage', chatMessage);
             setMessage('');
@@ -91,9 +95,30 @@ const Chat = () => {
         );
     }
 
+    function extractJsonFromString(text) {
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) return null;
+        try {
+            return JSON.parse(jsonMatch[0]);
+        } catch (error) {
+            console.error("JSON 파싱 에러:", error);
+            return null;
+        }
+    }
+    const aiHandler =  async () => {
+         const res = await axios.post("/ml/schedule", messages)
+        console.log(res.data.raw_response);
+        const scheduleData = extractJsonFromString(res.data.raw_response);
+        if (!scheduleData) {
+            alert("일정 데이터를 파싱하지 못했습니다.");
+            return;
+        }
+        setSchedule(scheduleData)
+    }
     // 채팅 화면
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', height: '80vh', border: '1px solid #ccc' }}>
+        <div style={{display:'flex'}}>
+        <div style={{ display: 'flex', flexDirection: 'column', width:'60vw',height: '80vh', border: '1px solid #ccc' }}>
             <div style={{ flexGrow: 1, overflowY: 'auto', padding: '10px' }}>
                 {messages.map((msg, index) => (
                     <div key={index} style={{ marginBottom: '10px' }}>
@@ -113,7 +138,12 @@ const Chat = () => {
                 <button type="submit" style={{ padding: '10px' }}>전송</button>
             </form>
         </div>
-    );
+        <div><button onClick={aiHandler}>AI 일정 잡기</button>
+        <hr/>
+
+            {schedule && <ScheduleDisplay data={schedule} />}
+        </div>
+        </div>);
 }
 
 export default Chat
